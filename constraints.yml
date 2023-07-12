@@ -1,0 +1,10 @@
+Pendulum_world:
+  number_of_models: [0, 2]
+  model_names: ["pendulum1", "pendulum2", "pendulum3"]
+
+Pendulum:
+  names: ["pendulum1", "pendulum2"]
+
+Pendulum1:
+  names: ["pendulum1"]
+

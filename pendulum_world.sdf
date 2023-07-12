@@ -1,0 +1,44 @@
+<?xml version="1.0" ?>
+<!--
+  Copyright 2022 DeepX, Inc. All rights reserved
+
+  Pendulum world
+-->
+<sdf version="1.9">
+  <world name="default_pendulum_world">
+
+    <physics name="1ms" type="ignored">
+      <max_step_size>0.001</max_step_size>
+      <real_time_factor>1.0</real_time_factor>
+    </physics>
+    <plugin
+      filename="gz-sim-physics-system"
+      name="gz::sim::systems::Physics">
+<!-- 
+    Kinematic loop is currently not supported.
+    It is documented below in gazebosim issues.
+    https://gazebosim.org/docs/fortress/comparison
+    https://github.com/gazebosim/gz-physics/issues/25
+    This physics engine replacement is to add support for 
+    kinematic loop by ourselves as a temporary solution.
+    TODO: Consider how to pull the update in https://github.com/gazebosim/gz-physics 
+-->
+      <engine>
+        <filename>libdpxDartsim.so</filename>
+      </engine>
+    </plugin>
+    <plugin
+      filename="gz-sim-sensors-system"
+      name="gz::sim::systems::Sensors">
+      <render_engine>ogre2</render_engine>
+    </plugin>
+    <plugin
+      filename="gz-sim-user-commands-system"
+      name="gz::sim::systems::UserCommands">
+    </plugin>
+    <plugin
+      filename="gz-sim-scene-broadcaster-system"
+      name="gz::sim::systems::SceneBroadcaster">
+    </plugin>
+  </world>
+</sdf>

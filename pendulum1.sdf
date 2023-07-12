@@ -1,0 +1,18 @@
+<sdf version="1.6">
+  <model name="pendulum_with_base">
+    <link name="base">
+      <pose>0 0 0.3   0 0 0</pose>
+    </link>
+    <link name="pendulum">
+      <pose>0 0.5 1.0   1.57 0 0</pose>
+    </link>
+    <joint name="joint" type="revolute">
+      <parent>base</parent>
+      <child>pendulum</child>
+      <pose>0 0 0.5   0 0 0</pose>
+      <axis>
+        <xyz>1 0 0</xyz>
+      </axis>
+    </joint>
+  </model>
+</sdf>
