@@ -26,12 +26,15 @@ def export_world_to_sdf(world, output_file: str):  # friend function
 def main():
     # create a module dynamically
     mod_name = 'my_module'
-    object_list = [Factory.Helpers.create_model_class('pendulum.sdf'),
-                   Factory.Helpers.create_model_class("pendulum1.sdf"),
-                   Factory.Helpers.create_world_class("pendulum_world.sdf")]
+    object_list = [Factory.Helpers.create_model_class(
+                    './examples/pendulum.sdf'),
+                   Factory.Helpers.create_model_class(
+                    "./examples/pendulum1.sdf"),
+                   Factory.Helpers.create_world_class(
+                    "./examples/pendulum_world.sdf")]
     # read constraints.yml file into a dictionary
     constraints = {}
-    with open('constraints.yml', 'r') as f:
+    with open('./examples/constraints.yml', 'r') as f:
         constraints = yaml.safe_load(f)
         logging.info("constraints found: "
                      + str(constraints))
