@@ -7,6 +7,18 @@ The constraints are defined in YAML files (TBC). They should place constraints o
 
 The constrains should define the rules for generating sdf from the classes that are created
 
+# How to run
+
+1. [Install sdformat from source or binaries](http://sdformat.org/tutorials?tut=install)
+2. `python3 dyn_mod.sdf`
+
+# Features
+
+1. Dynamic modules
+1. Dynamic classes
+1. Class unary constraint validation from YAML
+
+# Roadmap
 
 ## World/Site
 
@@ -18,3 +30,5 @@ The constrains should define the rules for generating sdf from the classes that 
 
 - Model:
     - TBD
+
+- Binary constraints (conditional constraints between different classes)

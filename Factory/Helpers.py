@@ -1,33 +1,16 @@
 import importlib
 import copy
-import logging
 import sys
-from abc import ABC, abstractmethod
-
+import logging
 
 import sdformat13 as sdflib
 
-logging.basicConfig(level=logging.INFO)
+import Factory.Interfaces
+import Factory.Exceptions
 
 
-class Model(ABC):
-    # add any common methods here
-    pass
-class World(ABC):
-    # add any common methods here
-    pass
-
-class ModelException(Exception):
-    "Exception raised for errors in the creating model objects."
-
-    def __init__(self, model_name: str, constraint_name: str, possible_values: list = None):
-        self.model_name = model_name
-        self.constraint_name = constraint_name
-        self.message = f"Model {model_name} does not satisfy constraint <{constraint_name}>, possible values are {possible_values}"
-        super().__init__(self.message)
-
-
-def create_model_class(input_file: str, class_constraints: dict = None):
+# ---- Helper functions ----
+def create_model_class(input_file: str):
 
     root = sdflib.Root()
     try:
@@ -44,8 +27,7 @@ def create_model_class(input_file: str, class_constraints: dict = None):
 
     # create a class from the model
     # maybe use the types package to create a class dynamically?
-    class SomeModelClass(Model):
-        __constraints__ = copy.deepcopy(class_constraints)
+    class SomeModelClass(Factory.Interfaces.Model):
 
         def __init__(self):
             self.__root__ = sdflib.Root()
@@ -64,8 +46,9 @@ def create_model_class(input_file: str, class_constraints: dict = None):
                 if new_name in self.__constraints__["names"]:
                     self.sdf_model.set_name(new_name)
                 else:
-                    raise ModelException(Model.__name__, "names",
-                                         self.__constraints__["names"])
+                    raise Factory.Exceptions.ModelException(
+                            SomeModelClass.__name__, "names",
+                            self.__constraints__["names"])
         # def set_pose(self, new_pose: list):
         #    if self.__constraints__ is not None:
         #        # check if the new pose is valid
@@ -94,7 +77,7 @@ def create_world_class(input_file: str):
     except sdflib.SDFErrorsException as e:
         print(e, file=sys.stderr)
 
-    class SomeWorldClass(World):
+    class SomeWorldClass(Factory.Interfaces.World):
         def __init__(self):
             self.__root__ = sdflib.Root()
             self.__root__.load_sdf_string(sdf_string)
@@ -109,7 +92,7 @@ def create_world_class(input_file: str):
         def change_name(self, new_name: str):
             self.sdf_world.set_name(new_name)
 
-        def add_model(self, model: Model):
+        def add_model(self, model: Factory.Interfaces.Model):
             self.sdf_world.add_model(model.sdf_model)
 
     # get file name without extension by grepping between the last '/' and '.'
@@ -140,4 +123,3 @@ def create_module(mod_name: str, object_list: list, constraints: dict = {}):
 
     sys.modules[mod_name] = mod
     return mod
-

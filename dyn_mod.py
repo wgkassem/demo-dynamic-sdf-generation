@@ -1,13 +1,14 @@
 # The following script generate a module dynamically `my_module`
 # and adds a model a class `Pnedulum` from the sdf file "pendulum.sdf" to it.
 
-import sys
 import yaml
 import logging
 
 import sdformat13 as sdflib
 
 import Factory
+import Factory.Exceptions as ModuleExceptions
+import Factory.Helpers
 
 
 logging.basicConfig(level=logging.INFO)
@@ -25,9 +26,9 @@ def export_world_to_sdf(world, output_file: str):  # friend function
 def main():
     # create a module dynamically
     mod_name = 'my_module'
-    object_list = [Factory.create_model_class('pendulum.sdf'),
-                   Factory.create_model_class("pendulum1.sdf"),
-                   Factory.create_world_class("pendulum_world.sdf")]
+    object_list = [Factory.Helpers.create_model_class('pendulum.sdf'),
+                   Factory.Helpers.create_model_class("pendulum1.sdf"),
+                   Factory.Helpers.create_world_class("pendulum_world.sdf")]
     # read constraints.yml file into a dictionary
     constraints = {}
     with open('constraints.yml', 'r') as f:
@@ -35,7 +36,7 @@ def main():
         logging.info("constraints found: "
                      + str(constraints))
 
-    mod = Factory.create_module(mod_name, object_list, constraints)
+    mod = Factory.Helpers.create_module(mod_name, object_list, constraints)
     # export the module to the global namespace
     logging.info("Created new module contains: " + str(dir(mod)))
 
@@ -47,7 +48,8 @@ def main():
     logging.info("Trying illegal rename operation")
     try:
         model2.set_name("pendulum")
-    except Factory.ModelException as e:  # add the exception to module?
+    except ModuleExceptions.ModelException as e:
+        # add the exception to module?
         logging.info("   ... Succefully captured constraint violation")
         logging.error(e)
 
