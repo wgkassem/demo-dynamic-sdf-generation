@@ -2,11 +2,20 @@ import importlib
 import copy
 import logging
 import sys
+from abc import ABC, abstractmethod
+
 
 import sdformat13 as sdflib
 
 logging.basicConfig(level=logging.INFO)
 
+
+class Model(ABC):
+    # add any common methods here
+    pass
+class World(ABC):
+    # add any common methods here
+    pass
 
 class ModelException(Exception):
     "Exception raised for errors in the creating model objects."
@@ -35,7 +44,7 @@ def create_model_class(input_file: str, class_constraints: dict = None):
 
     # create a class from the model
     # maybe use the types package to create a class dynamically?
-    class Model:
+    class SomeModelClass(Model):
         __constraints__ = copy.deepcopy(class_constraints)
 
         def __init__(self):
@@ -67,9 +76,9 @@ def create_model_class(input_file: str, class_constraints: dict = None):
     model_class_name = input_file.split('/')[-1].split('.')[0]
     # Capitalize the first letter
     model_class_name = model_class_name[0].upper() + model_class_name[1:]
-    Model.__name__ = model_class_name
+    SomeModelClass.__name__ = model_class_name
     logging.info("created class: " + model_class_name)
-    return Model
+    return SomeModelClass
 
 
 def create_world_class(input_file: str):
@@ -85,7 +94,7 @@ def create_world_class(input_file: str):
     except sdflib.SDFErrorsException as e:
         print(e, file=sys.stderr)
 
-    class World:
+    class SomeWorldClass(World):
         def __init__(self):
             self.__root__ = sdflib.Root()
             self.__root__.load_sdf_string(sdf_string)
@@ -100,17 +109,16 @@ def create_world_class(input_file: str):
         def change_name(self, new_name: str):
             self.sdf_world.set_name(new_name)
 
-        def add_model(self, model):
+        def add_model(self, model: Model):
             self.sdf_world.add_model(model.sdf_model)
 
     # get file name without extension by grepping between the last '/' and '.'
     # if the file is in the current directory, the last '/' is not present
     world_class_name = input_file.split('/')[-1].split('.')[0]
-    # Capitalize the first letter
     world_class_name = world_class_name[0].upper() + world_class_name[1:]
 
-    World.__name__ = world_class_name
-    return World
+    SomeWorldClass.__name__ = world_class_name
+    return SomeWorldClass
 
 
 def new_module(mod_name):
@@ -119,7 +127,7 @@ def new_module(mod_name):
     return importlib.util.module_from_spec(spec)
 
 
-def create_module(mod_name, object_list, constraints):
+def create_module(mod_name: str, object_list: list, constraints: dict = {}):
 
     mod = new_module(mod_name)
     for obj in object_list:
@@ -130,9 +138,6 @@ def create_module(mod_name, object_list, constraints):
             obj.__constraints__ = constraints[obj.__name__]
         setattr(mod, obj.__name__, obj)
 
+    sys.modules[mod_name] = mod
     return mod
-
-# Add `create_world_class` for addign a world to the module
-# Add `create_constraint_class` indicating the type of constraint between two
-# classes
 

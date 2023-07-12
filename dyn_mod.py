@@ -37,11 +37,7 @@ def main():
 
     mod = Factory.create_module(mod_name, object_list, constraints)
     # export the module to the global namespace
-    logging.debug("my_module now contains: " + str(dir(mod)))
-    # add to sys.modules under package name "my_generation"
-    # remove the module if it already exists
-    if mod_name in sys.modules:
-        del sys.modules[mod_name]
+    logging.info("Created new module contains: " + str(dir(mod)))
 
     logging.info("Creating objects")
     world = mod.Pendulum_world()
@@ -51,7 +47,7 @@ def main():
     logging.info("Trying illegal rename operation")
     try:
         model2.set_name("pendulum")
-    except Factory.ModelException as e:  # maybe add the exception class to my_module
+    except Factory.ModelException as e:  # add the exception to module?
         logging.info("   ... Succefully captured constraint violation")
         logging.error(e)
 
@@ -61,11 +57,10 @@ def main():
 
     export_world_to_sdf(world, "pendulum_world_generated.sdf")
 
-    sys.modules[mod_name] = mod
-
 
 def main2():
     # import the exported module and create an object from it
+    # assert my_module in sys.modules
     import my_module
     model = my_module.Pendulum()
     logging.info("Created objects from the module in a different scope, sdf model name: "
